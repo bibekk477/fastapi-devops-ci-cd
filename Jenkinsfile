@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        VENV_DIR = ".venv"               // Virtual environment path
-        PIP_CACHE = "${WORKSPACE}\\.pip_cache" // Persistent pip cache
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -13,47 +8,26 @@ pipeline {
             }
         }
 
-        stage('Setup Python') {
+        stage('Install dependencies') {
             steps {
-                script {
-                    // Create virtual environment if it doesn't exist
-                    if (!fileExists(env.VENV_DIR)) {
-                        bat "python -m venv ${env.VENV_DIR}"
-                    }
-                }
-            }
-        }
-
-        stage('Install Dependencies with Cache') {
-            steps {
-                echo "Installing dependencies (cached)..."
-                // Activate virtual env and install with pip cache
-                bat """
-                call ${VENV_DIR}\\Scripts\\activate
-                set PIP_CACHE_DIR=${PIP_CACHE}
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                """
+                bat 'python -m pip install --upgrade pip'
+                bat 'pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo "Running pytest..."
-                bat """
-                call ${VENV_DIR}\\Scripts\\activate
-                pytest app/tests --maxfail=1 --disable-warnings -q
-                """
+                bat 'pytest app/tests --maxfail=1 --disable-warnings -q'
             }
         }
     }
 
     post {
         success {
-            echo " Tests passed!"
+            echo '✅ Tests passed!'
         }
         failure {
-            echo " Tests failed"
+            echo '❌ Tests failed'
         }
     }
 }
