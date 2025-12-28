@@ -24,7 +24,7 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Dependencies with Cache') {
             steps {
                 echo "Installing dependencies (cached)..."
                 // Activate virtual env and install with pip cache
