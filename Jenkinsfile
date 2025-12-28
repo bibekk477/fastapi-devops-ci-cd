@@ -10,7 +10,7 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                echo "installing dependencies with pip"
+                echo "installing dependencies using pip"
                 bat 'python -m pip install --upgrade pip'
                 bat 'pip install -r requirements.txt'
             }
