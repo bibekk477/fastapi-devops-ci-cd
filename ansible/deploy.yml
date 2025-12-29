@@ -1,0 +1,5 @@
+- name: Deploy FastAPI to Kubernetes
+  hosts: local
+  tasks:
+    - name: Apply Kubernetes manifests
+      command: kubectl apply -f k8s/
