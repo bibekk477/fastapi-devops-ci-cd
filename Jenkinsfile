@@ -63,7 +63,7 @@ pipeline {
           -v %WORKSPACE%:/work ^
           -w /work ^
           python:3.12-slim bash -c ^
-          "pip install ansible && ansible-playbook ansible/deploy.yml"
+           "pip install ansible && ansible-playbook -i ansible/hosts.ini ansible/deploy.yml"
         """
     }
 }
