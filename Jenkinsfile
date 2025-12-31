@@ -60,7 +60,7 @@ pipeline {
     steps {
         bat """
         wsl bash -lc "
-        cd $(wslpath '%WORKSPACE%') &&
+        cd \$(wslpath '${env.WORKSPACE}') &&
         ansible-playbook ansible/deploy.yml
         "
         """
