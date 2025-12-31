@@ -5,13 +5,6 @@ metadata:
   namespace: fastapi-ns
 spec:
   replicas: 2
-  imagePullSecrets: # ← ADD THIS
-    - name: dockerhub-secret # ← ADD THIS
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   selector:
     matchLabels:
       app: fastapi
@@ -20,8 +13,31 @@ spec:
       labels:
         app: fastapi
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
-        - name: fastapi
+        - name: fastapi-app
           image: bibekk477/fastapi-devops-ci-cd:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
+              name: http
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
