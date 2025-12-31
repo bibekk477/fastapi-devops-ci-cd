@@ -56,10 +56,10 @@ pipeline {
         // Minikube needs user-level Docker access, not SYSTEM.Result: API server container never starts.
         // Minikube is designed for local interactive use, not Windows CI pipelines.
 
-stage('Deploy via Ansible') {
+       stage('Deploy via Ansible') {
     steps {
         bat """
-        docker run --rm ^
+      docker run --rm ^
           -v %WORKSPACE%:/work ^
           -w /work ^
           python:3.12-slim bash -c ^
