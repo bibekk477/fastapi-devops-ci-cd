@@ -59,10 +59,11 @@ pipeline {
        stage('Deploy via Ansible') {
     steps {
         bat """
-        wsl bash -lc "
-        cd \$(wslpath '${env.WORKSPACE}') &&
-        ansible-playbook ansible/deploy.yml
-        "
+        docker run --rm ^
+          -v %WORKSPACE%:/work ^
+          -w /work ^
+          python:3.12-slim bash -c ^
+          "pip install ansible && ansible-playbook ansible/deploy.yml"
         """
     }
 }
