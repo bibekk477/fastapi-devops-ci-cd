@@ -44,14 +44,14 @@ pipeline {
             }
         }
 
-        stage('Start Minikube') {
-            steps {
-                bat """
-                minikube start --driver=docker
-                minikube status
-                """
-            }
-        }
+        // stage('Start Minikube') {
+        //     steps {
+        //         bat """
+        //         minikube start --driver=docker
+        //         minikube status
+        //         """
+        //     }
+        // }
 
         stage('Deploy via Ansible') {
             steps {
