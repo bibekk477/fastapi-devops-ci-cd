@@ -53,11 +53,20 @@ pipeline {
         //     }
         // }
 
-        stage('Deploy via Ansible') {
-            steps {
-                bat "wsl ansible-playbook ansible/deploy.yml"
-            }
-        }
+        // Minikube needs user-level Docker access, not SYSTEM.Result: API server container never starts.
+        // Minikube is designed for local interactive use, not Windows CI pipelines.
+
+       stage('Deploy via Ansible') {
+    steps {
+        bat """
+        wsl bash -lc "
+        cd $(wslpath '%WORKSPACE%') &&
+        ansible-playbook ansible/deploy.yml
+        "
+        """
+    }
+}
+
 
     }
 
