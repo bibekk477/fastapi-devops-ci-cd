@@ -60,7 +60,8 @@ stage('Deploy via Ansible') {
     steps {
         bat '''
         docker run --rm ^
-          -v %WORKSPACE%:/work ^
+          -v %WORKSPACE%:/work ^                  # Your project
+          -v C:\\Users\\youruser\\.kube\\config:/root/.kube/config ^  # Mount host kubeconfig
           -w /work ^
           python:3.12-slim bash -c ^
           "apt-get update && apt-get install -y curl && \
@@ -71,6 +72,7 @@ stage('Deploy via Ansible') {
         '''
     }
 }
+
 
 
 
