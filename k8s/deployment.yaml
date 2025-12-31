@@ -2,8 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fastapi-app
+  namespace: fastapi-ns
 spec:
   replicas: 2
+  imagePullSecrets: # ← ADD THIS
+    - name: dockerhub-secret # ← ADD THIS
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -19,6 +22,6 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: bibekk477/fastapi-devops:latest
+          image: bibekk477/fastapi-devops-ci-cd:latest
           ports:
             - containerPort: 8000
