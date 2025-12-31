@@ -59,20 +59,11 @@ pipeline {
 stage('Deploy via Ansible') {
     steps {
         bat '''
-        docker run --rm ^
-          -v %WORKSPACE%:/work ^                  # Your project
-          -v C:\\Users\\youruser\\.kube\\config:/root/.kube/config ^  # Mount host kubeconfig
-          -w /work ^
-          python:3.12-slim bash -c ^
-          "apt-get update && apt-get install -y curl && \
-           curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl && \
-           install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
-           pip install --quiet --disable-pip-version-check ansible && \
-           ansible-playbook ansible/deploy.yml -i ansible/inventory.ini --connection=local"
+        wsl bash -c "cd /mnt/c/path/to/workspace && \
+        ansible-playbook ansible/deploy.yml -i ansible/inventory.ini"
         '''
     }
 }
-
 
 
 
