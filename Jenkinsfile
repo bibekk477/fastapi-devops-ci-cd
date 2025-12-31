@@ -52,6 +52,39 @@ pipeline {
             }
         }
 
+        stage('Setup Kubernetes Registry Secret') {
+            steps {
+                echo "🔐 Creating Docker registry secret in Minikube..."
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+                        bat '''
+                        set KUBECONFIG=%KUBECONFIG_FILE%
+                        
+                        REM Create namespace if doesn't exist
+                        kubectl create namespace fastapi-ns || echo Namespace already exists
+                        
+                        REM Delete old secret if exists
+                        kubectl delete secret dockerhub-secret -n fastapi-ns || echo No old secret
+                        
+                        REM Create new registry secret
+                        kubectl create secret docker-registry dockerhub-secret ^
+                          --docker-server=docker.io ^
+                          --docker-username=%DOCKER_USER% ^
+                          --docker-password=%DOCKER_PASS% ^
+                          --docker-email=bibek@example.com ^
+                          -n fastapi-ns
+                        
+                        echo Secret created successfully
+                        '''
+                    }
+                }
+            }
+        }
+
         // stage('Start Minikube') {
         //     steps {
         //         bat """
@@ -73,9 +106,6 @@ pipeline {
                     
                     REM Verify kubectl connection
                     kubectl cluster-info
-                    
-                    REM Create namespace if doesn't exist
-                    kubectl create namespace fastapi-ns || echo Namespace already exists
                     
                     REM Apply Kubernetes manifests
                     echo Applying deployment...
@@ -118,4 +148,3 @@ pipeline {
         }
     }
 }
-
