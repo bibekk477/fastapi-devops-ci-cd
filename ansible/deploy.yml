@@ -2,4 +2,4 @@
   hosts: local
   tasks:
     - name: Apply Kubernetes manifests
-      command: kubectl apply -f k8s/
+      command: kubectl apply -f /work/k8s/
