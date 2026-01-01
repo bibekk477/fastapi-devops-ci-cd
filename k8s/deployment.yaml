@@ -13,8 +13,9 @@ spec:
       labels:
         app: fastapi
     spec:
-      imagePullSecrets:
-        - name: dockerhub-secret
+      # this section is commented out because the image is public
+      # imagePullSecrets:
+      #   - name: dockerhub-secret
       containers:
         - name: fastapi-app
           image: bibekk477/fastapi-devops-ci-cd:latest
