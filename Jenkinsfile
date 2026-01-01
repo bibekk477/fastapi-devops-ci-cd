@@ -83,7 +83,7 @@ pipeline {
                 echo "🚀 Deploying to Minikube..."
                 bat '''
                 REM Set kubeconfig to the updated one
-                set KUBECONFIG=%USERPROFILE%\.kube\config
+                set KUBECONFIG=%USERPROFILE%\\.kube\\config
                 
                 REM Verify kubectl connection
                 echo Verifying connection...
