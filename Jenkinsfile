@@ -52,6 +52,21 @@ pipeline {
             }
         }
 
+// Minikube start stage is commented out because it often fails in Windows CI environments.
+//ensure minikube is already running before deploying.
+        // stage('Start Minikube') {
+        //     steps {
+        //         bat """
+        //         minikube start --driver=docker
+        //         minikube status
+        //         """
+        //     }
+        // }
+
+        // Minikube needs user-level Docker access, not SYSTEM.Result: API server container never starts.
+        // Minikube is designed for local interactive use, not Windows CI pipelines.
+
+
 //this stage is not needed since Registry secrets are required only when Kubernetes pulls private images.
 //  For public images, Kubernetes can pull directly from Docker Hub without authentication
         // stage('Setup Kubernetes Registry Secret') {
@@ -88,19 +103,6 @@ pipeline {
         // }
 
 
-// Minikube start stage is commented out because it often fails in Windows CI environments.
-//ensure minikube is already running before deploying.
-        // stage('Start Minikube') {
-        //     steps {
-        //         bat """
-        //         minikube start --driver=docker
-        //         minikube status
-        //         """
-        //     }
-        // }
-
-        // Minikube needs user-level Docker access, not SYSTEM.Result: API server container never starts.
-        // Minikube is designed for local interactive use, not Windows CI pipelines.
 
         stage('Refresh Kubeconfig') {
             steps {
