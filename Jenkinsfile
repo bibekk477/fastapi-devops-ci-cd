@@ -51,40 +51,44 @@ pipeline {
                 echo "✓ Image pushed to Docker Hub"
             }
         }
+//this stage is not needed since Registry secrets are required only when Kubernetes pulls private images.
+//  For public images, Kubernetes can pull directly from Docker Hub without authentication
+        // stage('Setup Kubernetes Registry Secret') {
+        //     steps {
+        //         echo "🔐 Creating Docker registry secret in Minikube..."
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'dockerhub-creds',
+        //             usernameVariable: 'DOCKER_USER',
+        //             passwordVariable: 'DOCKER_PASS'
+        //         )]) {
+        //             withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+        //                 bat '''
+        //                 set KUBECONFIG=%KUBECONFIG_FILE%
+                        
+        //                 REM Create namespace if doesn't exist
+        //                 kubectl create namespace fastapi-ns || echo Namespace already exists
+                        
+        //                 REM Delete old secret if exists
+        //                 kubectl delete secret dockerhub-secret -n fastapi-ns || echo No old secret
+                        
+        //                 REM Create new registry secret
+        //                 kubectl create secret docker-registry dockerhub-secret ^
+        //                   --docker-server=docker.io ^
+        //                   --docker-username=%DOCKER_USER% ^
+        //                   --docker-password=%DOCKER_PASS% ^
+        //                   --docker-email=bibek@example.com ^
+        //                   -n fastapi-ns
+                        
+        //                 echo Secret created successfully
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Setup Kubernetes Registry Secret') {
-            steps {
-                echo "🔐 Creating Docker registry secret in Minikube..."
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
-                        bat '''
-                        set KUBECONFIG=%KUBECONFIG_FILE%
-                        
-                        REM Create namespace if doesn't exist
-                        kubectl create namespace fastapi-ns || echo Namespace already exists
-                        
-                        REM Delete old secret if exists
-                        kubectl delete secret dockerhub-secret -n fastapi-ns || echo No old secret
-                        
-                        REM Create new registry secret
-                        kubectl create secret docker-registry dockerhub-secret ^
-                          --docker-server=docker.io ^
-                          --docker-username=%DOCKER_USER% ^
-                          --docker-password=%DOCKER_PASS% ^
-                          --docker-email=bibek@example.com ^
-                          -n fastapi-ns
-                        
-                        echo Secret created successfully
-                        '''
-                    }
-                }
-            }
-        }
 
+// Minikube start stage is commented out because it often fails in Windows CI environments.
+//ensure minikube is already running before deploying.
         // stage('Start Minikube') {
         //     steps {
         //         bat """
@@ -105,7 +109,12 @@ pipeline {
                     set KUBECONFIG=%KUBECONFIG_FILE%
                     
                     REM Verify kubectl connection
-                    kubectl cluster-info
+                    kubectl cluster-info || exit /b 1
+
+                    REM Verify namespaces exist
+                    echo Ensuring namespace exists...
+                    kubectl create namespace fastapi-ns || echo Namespace already exists
+
                     
                     REM Apply Kubernetes manifests
                     echo Applying deployment...
