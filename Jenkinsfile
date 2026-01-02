@@ -179,12 +179,12 @@ pipeline {
 
     }
 
- post {
+post {
 
         success {
             echo "✅ CI/CD Pipeline Completed Successfully!"
 
-            withCredentials([string(credentialsId: 'email-recipient-fastapi-ci-cd', variable: 'EMAIL_RECIPIENT')]) {
+            withCredentials([string(credentialsId: 'email-recipient', variable: 'EMAIL_RECIPIENT')]) {
                 emailext(
                     subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """
@@ -205,7 +205,7 @@ pipeline {
                         <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
                         <p>— Jenkins CI/CD</p>
                     """,
-                    to: "${EMAIL_RECIPIENT}",
+                    to: EMAIL_RECIPIENT,
                     mimeType: 'text/html'
                 )
             }
@@ -214,7 +214,7 @@ pipeline {
         failure {
             echo "❌ Pipeline Failed - Check logs above"
 
-            withCredentials([string(credentialsId: 'email-recipient', variable: 'EMAIL_RECIPIENT')]) {
+            withCredentials([string(credentialsId: 'email-recipient-fastapi-ci-cd', variable: 'EMAIL_RECIPIENT')]) {
                 emailext(
                     subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """
@@ -234,7 +234,7 @@ pipeline {
                         <p style="color:red;">Immediate investigation required.</p>
                         <p>— Jenkins CI/CD</p>
                     """,
-                    to: "${EMAIL_RECIPIENT}",
+                    to: EMAIL_RECIPIENT,
                     mimeType: 'text/html',
                     attachLog: true,
                     compressLog: true
@@ -246,5 +246,6 @@ pipeline {
             echo "📧 Email notification handled"
         }
     }
+
 
 }
