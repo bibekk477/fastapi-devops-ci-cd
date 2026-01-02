@@ -5,6 +5,7 @@ pipeline {
         IMAGE_NAME = "bibekk477/fastapi-devops-ci-cd"
         IMAGE_TAG  = "latest"
         REGISTRY   = "docker.io"
+        EMAIL_RECIPIENT = "bibekk46@gmail.com"
     }
 
     stages {
@@ -178,7 +179,7 @@ pipeline {
 
     }
 
-post {
+ post {
 
         success {
             echo "✅ CI/CD Pipeline Completed Successfully!"
@@ -203,10 +204,8 @@ post {
                     <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
                     <p>— Jenkins CI/CD</p>
                 """,
-                mimeType: 'text/html',
-                recipientProviders: [
-                    brokenBuildSuspects()
-                ]
+                to: "${EMAIL_RECIPIENT}",
+                mimeType: 'text/html'
             )
         }
 
@@ -232,12 +231,10 @@ post {
                     <p style="color:red;">Immediate investigation required.</p>
                     <p>— Jenkins CI/CD</p>
                 """,
+                to: "${EMAIL_RECIPIENT}",
                 mimeType: 'text/html',
                 attachLog: true,
-                compressLog: true,
-                recipientProviders: [
-                    brokenBuildSuspects()
-                ]
+                compressLog: true
             )
         }
 
