@@ -182,8 +182,7 @@ post {
 
     success {
         echo "✅ CI/CD Pipeline Completed Successfully!"
-        echo "Your app is running on Minikube"
-
+        
         emailext(
             subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
@@ -201,14 +200,10 @@ post {
               <li>Status: Running</li>
             </ul>
 
-            <p>
-              🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a>
-            </p>
-
+            <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
             <p>— Jenkins CI/CD</p>
             """,
-            to: "bibekk46@gmail.com",
-            mimeType: 'text/html'
+            mimeType: 'text/html' // HTML email
         )
     }
 
@@ -230,17 +225,10 @@ post {
               <li>Minikube / Kubernetes Deployment</li>
             </ul>
 
-            <p>
-              🔍 <a href="${env.BUILD_URL}">Check Console Logs</a>
-            </p>
-
-            <p style="color:red;">
-              Immediate investigation required.
-            </p>
-
+            <p>🔍 <a href="${env.BUILD_URL}">Check Console Logs</a></p>
+            <p style="color:red;">Immediate investigation required.</p>
             <p>— Jenkins CI/CD</p>
             """,
-            to: "bibekk46@gmail.com",
             mimeType: 'text/html',
             attachLog: true,
             compressLog: true
