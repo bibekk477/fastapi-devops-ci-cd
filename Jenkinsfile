@@ -182,28 +182,29 @@ post {
 
     success {
         echo "✅ CI/CD Pipeline Completed Successfully!"
-        
+
         emailext(
             subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
-            <h2 style="color:green;">CI/CD Pipeline Completed Successfully 🎉</h2>
+                <h2 style="color:green;">CI/CD Pipeline Completed Successfully 🎉</h2>
 
-            <p><b>Project:</b> ${env.JOB_NAME}</p>
-            <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
-            <p><b>Docker Image:</b> ${IMAGE_NAME}:${IMAGE_TAG}</p>
-            <p><b>Registry:</b> ${REGISTRY}</p>
+                <p><b>Project:</b> ${env.JOB_NAME}</p>
+                <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                <p><b>Docker Image:</b> ${IMAGE_NAME}:${IMAGE_TAG}</p>
+                <p><b>Registry:</b> ${REGISTRY}</p>
 
-            <h3>Deployment Info</h3>
-            <ul>
-              <li>Cluster: Minikube</li>
-              <li>Namespace: fastapi-ns</li>
-              <li>Status: Running</li>
-            </ul>
+                <h3>Deployment Info</h3>
+                <ul>
+                  <li>Cluster: Minikube</li>
+                  <li>Namespace: fastapi-ns</li>
+                  <li>Status: Running</li>
+                </ul>
 
-            <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
-            <p>— Jenkins CI/CD</p>
+                <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
+                <p>— Jenkins CI/CD</p>
             """,
-            mimeType: 'text/html' // HTML email
+            mimeType: 'text/html',
+            to: ""  // This uses Default Recipients from Jenkins configuration
         )
     }
 
@@ -213,25 +214,26 @@ post {
         emailext(
             subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
-            <h2 style="color:red;">CI/CD Pipeline Failed ❌</h2>
+                <h2 style="color:red;">CI/CD Pipeline Failed ❌</h2>
 
-            <p><b>Project:</b> ${env.JOB_NAME}</p>
-            <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                <p><b>Project:</b> ${env.JOB_NAME}</p>
+                <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
 
-            <h3>Failure Possible In</h3>
-            <ul>
-              <li>Unit Tests</li>
-              <li>Docker Build / Push</li>
-              <li>Minikube / Kubernetes Deployment</li>
-            </ul>
+                <h3>Failure Possible In</h3>
+                <ul>
+                  <li>Unit Tests</li>
+                  <li>Docker Build / Push</li>
+                  <li>Minikube / Kubernetes Deployment</li>
+                </ul>
 
-            <p>🔍 <a href="${env.BUILD_URL}">Check Console Logs</a></p>
-            <p style="color:red;">Immediate investigation required.</p>
-            <p>— Jenkins CI/CD</p>
+                <p>🔍 <a href="${env.BUILD_URL}">Check Console Logs</a></p>
+                <p style="color:red;">Immediate investigation required.</p>
+                <p>— Jenkins CI/CD</p>
             """,
             mimeType: 'text/html',
             attachLog: true,
-            compressLog: true
+            compressLog: true,
+            to: ""  // Uses Default Recipients
         )
     }
 
