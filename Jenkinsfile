@@ -184,7 +184,7 @@ post {
         success {
             echo "✅ CI/CD Pipeline Completed Successfully!"
 
-            withCredentials([string(credentialsId: 'email-recipient', variable: 'EMAIL_RECIPIENT')]) {
+            withCredentials([string(credentialsId: 'email-recipient-fastapi-ci-cd', variable: 'EMAIL_RECIPIENT')]) {
                 emailext(
                     subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """
