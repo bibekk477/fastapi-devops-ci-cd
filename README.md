@@ -52,93 +52,101 @@ A NodePort Service exposes the application externally.
 
 ## CI/CD WORKFLOW (FIGURE)
 
+```
 ┌──────────────┐
-│ GitHub │
-│ (Source) │
+│    GitHub    │
+│   (Source)   │
 └──────┬───────┘
-│ 1️⃣ Checkout Code
-▼
+       │ 1️⃣ Checkout Code
+       ▼
 ┌──────────────┐
-│ Jenkins │
-│ Pipeline │
+│   Jenkins    │
+│  Pipeline    │
 └──────┬───────┘
-│
-│ 2️⃣ Run Unit Tests
-│ (pytest)
-▼
+       │
+       │ 2️⃣ Run Unit Tests (pytest)
+       ▼
 ┌──────────────┐
-│ Test Stage │
-│ ✔ Pass / ✖ │
+│  Test Stage  │
+│ ✔ Pass / ✖ Fail │
 └──────┬───────┘
-│
-│ 3️⃣ Build Docker Image
-▼
+       │
+       │ 3️⃣ Build Docker Image
+       ▼
 ┌──────────────┐
 │ Docker Build │
-│ fastapi-app │
+│  fastapi-app │
 └──────┬───────┘
-│
-│ 4️⃣ Push Image
-▼
+       │
+       │ 4️⃣ Push Image
+       ▼
 ┌──────────────┐
-│ Docker Hub │
-│ (Registry) │
-│ Public Image│
+│  Docker Hub  │
+│  (Registry)  │
+│ Public Image │
 └──────┬───────┘
-│
-│ 5️⃣ Refresh kubeconfig
-│ (minikube update-context)
-▼
+       │
+       │ 5️⃣ Refresh kubeconfig
+       │    (minikube update-context)
+       ▼
 ┌──────────────────────────┐
-│ kubeconfig Updated │
-│ Jenkins → Minikube │
+│   kubeconfig Updated     │
+│  Jenkins → Minikube      │
 └────────┬─────────┘
-│
-│ 6️⃣ Deploy to minikube
-▼
+         │
+         │ 6️⃣ Deploy to Minikube
+         ▼
 ┌─────────────────────────┐
-│ Minikube Cluster │
-│ │
-│ ┌───────────────────┐ │
-│ │ Deployment (2 Pods)│ │
-│ │ FastAPI Container │ │
-│ └───────────────────┘ │
-│ │ │
-│ ▼ │
-│ Service (NodePort) │
+│    Minikube Cluster     │
+│                         │
+│  ┌───────────────────┐ │
+│  │ Deployment (2 Pods)│ │
+│  │ FastAPI Container  │ │
+│  └───────────────────┘ │
+│            │
+│            ▼
+│     ┌───────────────┐
+│     │ Service       │
+│     │ NodePort 32557│
+│     └───────────────┘
 └─────────────────────────┘
+```
+
 
 ## LIVELINESS & READINESS(FIGURE)
-
+```
 User / Browser
-|
-v
+       |
+       v
 NodePort Service (32557)
-|
-v
+       |
+       v
 ┌────────────────────────────┐
-│ Kubernetes Service │
-│ (Load Balancer inside K8s)│
+│      Kubernetes Service     │
+│  (Load Balancer inside K8s)│
 └─────────────┬──────────────┘
-|
-v
-┌───────────────────────┐
-│ Pods │
-│ │
-│ ┌─────────────────┐ │
-│ │ FastAPI Pod 1 │ │
-│ │ │ │
-│ │ 🔍 Readiness ✔ │◀── Service sends traffic
-│ │ ❤️ Liveness ✔ │ |
-│ └─────────────────┘ |
-│ |
-│ ┌─────────────────┐ |
-│ │ FastAPI Pod 2 │ |
-│ │ │ |
-│ │ 🔍 Readiness ✔ │◀── Service sends traffic
-│ │ ❤️ Liveness ✔ │
-│ └─────────────────┘
-│
-│ If Liveness ❌ → Pod Restarted
-│ If Readiness ❌ → Traffic Stopped
-└────────────────────────┘
+              |
+              v
+     ┌───────────────────────┐
+     │          Pods          │
+     │                       │
+     │  ┌─────────────────┐  │
+     │  │   FastAPI Pod 1 │  │
+     │  │                 │  │
+     │  │ 🔍 Readiness ✔  │◀─ Service sends traffic
+     │  │ ❤️ Liveness ✔  │  │
+     │  └─────────────────┘  │
+     │                       │
+     │  ┌─────────────────┐  │
+     │  │   FastAPI Pod 2 │  │
+     │  │                 │  │
+     │  │ 🔍 Readiness ✔  │◀─ Service sends traffic
+     │  │ ❤️ Liveness ✔  │  │
+     │  └─────────────────┘  │
+     │                       │
+     │ If Liveness ❌ → Pod Restarted
+     │ If Readiness ❌ → Traffic Stopped
+     └────────────────────────┘
+```
+
+
