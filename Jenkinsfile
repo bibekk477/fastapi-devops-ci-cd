@@ -184,64 +184,67 @@ pipeline {
         success {
             echo "✅ CI/CD Pipeline Completed Successfully!"
 
-            emailext(
-                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    <h2 style="color:green;">CI/CD Pipeline Completed Successfully 🎉</h2>
+            withCredentials([string(credentialsId: 'email-recipient-fastapi-ci-cd', variable: 'EMAIL_RECIPIENT')]) {
+                emailext(
+                    subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                        <h2 style="color:green;">CI/CD Pipeline Completed Successfully 🎉</h2>
 
-                    <p><b>Project:</b> ${env.JOB_NAME}</p>
-                    <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
-                    <p><b>Docker Image:</b> ${IMAGE_NAME}:${IMAGE_TAG}</p>
-                    <p><b>Registry:</b> ${REGISTRY}</p>
+                        <p><b>Project:</b> ${env.JOB_NAME}</p>
+                        <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                        <p><b>Docker Image:</b> ${IMAGE_NAME}:${IMAGE_TAG}</p>
+                        <p><b>Registry:</b> ${REGISTRY}</p>
 
-                    <h3>Deployment Info</h3>
-                    <ul>
-                      <li>Cluster: Minikube</li>
-                      <li>Namespace: fastapi-ns</li>
-                      <li>Status: Running</li>
-                    </ul>
+                        <h3>Deployment Info</h3>
+                        <ul>
+                          <li>Cluster: Minikube</li>
+                          <li>Namespace: fastapi-ns</li>
+                          <li>Status: Running</li>
+                        </ul>
 
-                    <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
-                    <p>— Jenkins CI/CD</p>
-                """,
-                // to: "${EMAIL_RECIPIENT}",
-                mimeType: 'text/html'
-            )
+                        <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
+                        <p>— Jenkins CI/CD</p>
+                    """,
+                    to: "${EMAIL_RECIPIENT}",
+                    mimeType: 'text/html'
+                )
+            }
         }
 
         failure {
             echo "❌ Pipeline Failed - Check logs above"
 
-            emailext(
-                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    <h2 style="color:red;">CI/CD Pipeline Failed ❌</h2>
+            withCredentials([string(credentialsId: 'email-recipient', variable: 'EMAIL_RECIPIENT')]) {
+                emailext(
+                    subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                        <h2 style="color:red;">CI/CD Pipeline Failed ❌</h2>
 
-                    <p><b>Project:</b> ${env.JOB_NAME}</p>
-                    <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                        <p><b>Project:</b> ${env.JOB_NAME}</p>
+                        <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
 
-                    <h3>Failure Possible In</h3>
-                    <ul>
-                      <li>Unit Tests</li>
-                      <li>Docker Build / Push</li>
-                      <li>Minikube / Kubernetes Deployment</li>
-                    </ul>
+                        <h3>Failure Possible In</h3>
+                        <ul>
+                          <li>Unit Tests</li>
+                          <li>Docker Build / Push</li>
+                          <li>Minikube / Kubernetes Deployment</li>
+                        </ul>
 
-                    <p>🔍 <a href="${env.BUILD_URL}">Check Console Logs</a></p>
-                    <p style="color:red;">Immediate investigation required.</p>
-                    <p>— Jenkins CI/CD</p>
-                """,
-                // to: "${EMAIL_RECIPIENT}",
-                mimeType: 'text/html',
-                attachLog: true,
-                compressLog: true
-            )
+                        <p>🔍 <a href="${env.BUILD_URL}">Check Console Logs</a></p>
+                        <p style="color:red;">Immediate investigation required.</p>
+                        <p>— Jenkins CI/CD</p>
+                    """,
+                    to: "${EMAIL_RECIPIENT}",
+                    mimeType: 'text/html',
+                    attachLog: true,
+                    compressLog: true
+                )
+            }
         }
 
         always {
             echo "📧 Email notification handled"
         }
     }
-
 
 }
