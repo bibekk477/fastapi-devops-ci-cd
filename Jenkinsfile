@@ -203,7 +203,10 @@ post {
                     <p>🔗 <a href="${env.BUILD_URL}">View Jenkins Build</a></p>
                     <p>— Jenkins CI/CD</p>
                 """,
-                mimeType: 'text/html'
+                mimeType: 'text/html',
+                recipientProviders: [
+                    brokenBuildSuspects()
+                ]
             )
         }
 
@@ -231,7 +234,10 @@ post {
                 """,
                 mimeType: 'text/html',
                 attachLog: true,
-                compressLog: true
+                compressLog: true,
+                recipientProviders: [
+                    brokenBuildSuspects()
+                ]
             )
         }
 
@@ -239,5 +245,6 @@ post {
             echo "📧 Email notification handled"
         }
     }
+
 
 }
