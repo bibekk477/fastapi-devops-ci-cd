@@ -243,6 +243,7 @@ post {
             to: "bibekk46@gmail.com",
             mimeType: 'text/html',
             attachLog: true
+            compressLog: true
         )
     }
 
